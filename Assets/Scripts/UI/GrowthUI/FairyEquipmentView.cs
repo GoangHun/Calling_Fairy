@@ -25,7 +25,7 @@ public class FairyEquipmentView : MonoBehaviour
     [Header("Prefabs")]
     public GameObject equipItemButtonPrefab;
 
-    [Header("EquipCreate View")_]
+    [Header("EquipCreate View")]
     public TextMeshProUGUI equipName;
     public Image equipPieceImage;
     public Image pieceCountSlider;
@@ -35,7 +35,7 @@ public class FairyEquipmentView : MonoBehaviour
     public TextMeshProUGUI equipPDefenceText;
     public TextMeshProUGUI equipMDefenceText;
 
-    [Header("EquipGrowth View")_]
+    [Header("EquipGrowth View")]
     public TextMeshProUGUI equipName2;
     public Image equipImage;
     public Image equipExpSlider;
@@ -49,7 +49,7 @@ public class FairyEquipmentView : MonoBehaviour
     public Button equipLvUpButton;
     public ParticleSystem equipExpParticle;
 
-    [Header("RankUp Effect")_]
+    [Header("RankUp Effect")]
     public GameObject rankUpAttractors;
     public List<ParticleSystem> rankUpParticles;
     public ParticleSystem fairyAttractorParticle2;
