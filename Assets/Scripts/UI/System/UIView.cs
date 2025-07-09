@@ -7,7 +7,8 @@ public class UIView : MonoBehaviour
 
     private void Awake()
     {
-        // 시작할 때 자신의 자식들 중에서 모든 DataBinder를 찾아 리스트에 등록
+        // DataBinderコンポーネントをすべて取得
+        // trueを指定して非アクティブな子オブジェクトも含めて取得
         GetComponentsInChildren<DataBinder>(true, binders);
     }
 
@@ -15,7 +16,7 @@ public class UIView : MonoBehaviour
     {
         foreach (var binder in binders)
         {
-            binder.targetModel = fairy; // DataBinder의 targetModel 설정
+            binder.targetModel = fairy; // DataBinderのtargetModel設定
             binder.UpdateUI();
         }
     }
@@ -24,11 +25,14 @@ public class UIView : MonoBehaviour
     {
         foreach (var binder in binders)
         {
-            binder.targetModel = equipment; // DataBinder의 targetModel 설정
+            binder.targetModel = equipment; // DataBinderのtargetModel設定
             binder.UpdateUI();
         }
     }
 
+    /// <summary>
+    /// すべてのDataBinderを更新します。
+    /// </summary>
     public void UpdateAll()
     {
         foreach (var binder in binders)

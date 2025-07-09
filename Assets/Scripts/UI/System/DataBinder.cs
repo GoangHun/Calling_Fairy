@@ -19,6 +19,11 @@ public class DataBinder : MonoBehaviour
     public Image imageComponent;
     public Slider sliderComponent;
 
+    /// <summary>
+    /// UIを更新するメソッド。
+    /// targetModelとpropertyPathが設定されている場合、指定されたプロパティの値を取得し、
+    /// 対応するUIコンポーネントに反映します。
+    /// </summary>
     public void UpdateUI()
     {
         if (targetModel == null || string.IsNullOrEmpty(propertyPath)) return;
@@ -53,6 +58,13 @@ public class DataBinder : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// 指定されたオブジェクトとパスから値を取得するヘルパーメソッド。
+    /// パスはドットで区切られたプロパティやフィールドの名前を指定します。
+    /// </summary>
+    /// <param name="source">値を取得するオブジェクト</param>
+    /// <param name="path">プロパティやフィールドのパス (例: "Name", "FinalStat.attack")</param>
+    /// <returns>取得した値。存在しない場合はnull。</returns>
     private object GetValueFromPath(object source, string path)
     {
         object current = source;
