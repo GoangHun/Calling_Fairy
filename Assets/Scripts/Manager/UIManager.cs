@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class UIManager : MonoBehaviour
+public class UIManager : Singleton<UIManager>
 {
     public UI stageUI;
     public UI stage2UI;
@@ -21,74 +21,56 @@ public class UIManager : MonoBehaviour
     public DetailStatModal detailStatModal;
     public ObjectPoolManager objPoolMgr;
     public GameObject blockPanel;
-    public UI CurrentUI { get; set; }
-
-    private static UIManager instance;
-    private static bool applicationIsQuitting = false;
-    private static object _lock = new object();
     
-    public AudioClip[] seClips = new AudioClip[9];
-    public static UIManager Instance
+    private Stack<UI> uiStack = new Stack<UI>();
+    
+    /// <summary>
+    /// 現在アクティブなUIを取得します。
+    /// </summary>
+    /// <returns>現在アクティブなUI or null</returns>
+    public UI CurrentUI
     {
         get
         {
-            if (applicationIsQuitting)
-            {
-                Debug.LogWarning("[Singleton] Instance '" + typeof(GameManager) +
-                    "' already destroyed on application quit." +
-                    " Won't create again - returning null.");
-                return null;
-            }
-
-            lock (_lock)
-            {
-                if (instance == null)
-                {
-                    instance = (UIManager)FindFirstObjectByType(typeof(UIManager));
-                    var UIs = FindObjectsOfType(typeof(UIManager));
-                    if (UIs.Length > 1)
-                    {
-                        foreach (var UI in UIs)
-                        {
-                            if (!ReferenceEquals(instance, (UIManager)UI))
-                            {
-                                Destroy(UI);
-                            }
-                        }
-                        return instance;
-                    }
-
-                    if (instance == null)
-                    {
-                        GameObject singleton = new GameObject();
-                        instance = singleton.AddComponent<UIManager>();
-                        singleton.name = "(singleton) " + typeof(UIManager).ToString();
-
-                        //DontDestroyOnLoad(singleton);
-
-                        Debug.Log("[Singleton] An instance of " + typeof(UIManager) +
-                            " is needed in the scene, so '" + singleton +
-                            "' was created with DontDestroyOnLoad.");
-                    }
-                    else
-                    {
-                        Debug.Log("[Singleton] Using instance already created: " +
-                            instance.gameObject.name);
-                    }
-                }
-
-                return instance;
-            }
-        }
-        set
-        {
-            if (instance != null)
-                Destroy(instance);
-            instance = value;
+            if (uiStack.Count > 0)
+                return uiStack.Peek();
+            return null;
         }
     }
 
+    public AudioClip[] seClips = new AudioClip[9];
 
+    /// <summary>
+    /// 指定UIをスタックにプッシュし、現在のUIを非アクティブにします。
+    /// </summary>
+    /// <param name="ui">スタックにプッシュしてActiveするUI</param>
+    public void PushUI(UI ui)
+    {
+        if (CurrentUI != null)
+        {
+            CurrentUI.gameObject.SetActive(false);
+        }
+        uiStack.Push(ui);
+        ui.gameObject.SetActive(true);
+    }
+
+    /// <summary>
+    /// 現在のUIをスタックからポップし、前のUIをアクティブにします。
+    /// </summary>
+    public void PopUI()
+    {
+        if (CurrentUI != null)
+        {
+            UI poppedUI = uiStack.Pop();
+            poppedUI.gameObject.SetActive(false);
+
+            if (CurrentUI != null)
+            {
+                CurrentUI.gameObject.SetActive(true);
+            }
+        }
+    }
+    
     private void Start()
     {
         OnMainSceneUpdateUI?.Invoke();
@@ -105,24 +87,14 @@ public class UIManager : MonoBehaviour
 
     public void DirectOpenUI(int index)
     {
-        Stack<UI> uiStack = new Stack<UI>();
-        uiStack.Push(UIs[index]);
-        while (uiStack.Peek().parentWindow != null)
-        {
-            uiStack.Push(uiStack.Peek().parentWindow);
-        }
-
-        while (uiStack.Count > 0)
-        {
-            uiStack.Pop().ActiveUI();
-        }
+        UIs[index].ActiveUI();
     }
 
     public void ReturnHome()
     {
-        while (CurrentUI != null)
+        while (uiStack.Count > 0)
         {
-            CurrentUI.NonActiveUI();
+            PopUI();
         }
     }
 

@@ -43,7 +43,7 @@ public class FairyCard : Card
         var table = DataTableMgr.GetTable<CharacterTable>();
         var stringTable = DataTableMgr.GetTable<StringTable>();
 
-        PrivateID = ID =  id;
+        PrivateID = ID = id;
         Name = stringTable.dic[table.dic[ID].CharName].Value;
         Grade = table.dic[ID].CharStartingGrade;
         Level = 1;
